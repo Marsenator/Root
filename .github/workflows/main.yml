@@ -8,16 +8,16 @@ jobs:
 
     steps:
     - name: Download LocalXpose
-      run: Invoke-WebRequest https://api.localxpose.io/api/downloads/loclx-linux-arm64.deb -OutFile lx.exe
+      run: Invoke-WebRequest -Uri "https://github.com/localxpose/localxpose/releases/latest/download/lx-windows-amd64.exe" -OutFile lx.exe
 
     - name: Enable Remote Desktop
       run: |
-        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -Value 0
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
         Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
 
-    - name: Start LocalXpose TCP tunnel on port 3389
-      run: .\lx.exe tunnel tcp --port 3389 --token $Env:LX_TOKEN
+    - name: Start LocalXpose tunnel on port 3389
+      run: .\lx.exe tcp 3389 --token $Env:LX_TOKEN
       env:
         LX_TOKEN: ${{ secrets.LX_TOKEN }}
