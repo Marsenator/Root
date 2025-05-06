@@ -8,7 +8,7 @@ jobs:
 
     steps:
     - name: Download LocalXpose
-      run: Invoke-WebRequest https://api.localxpose.io/api/downloads/loclx-linux-amd64.deb -OutFile lx.exe
+      run: Invoke-WebRequest https://api.localxpose.io/api/downloads/loclx-linux-arm64.deb -OutFile lx.exe
 
     - name: Enable Remote Desktop
       run: |
