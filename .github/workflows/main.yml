@@ -1,0 +1,23 @@
+name: CI
+
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Download LocalXpose
+      run: Invoke-WebRequest https://api.localxpose.io/api/v2/downloads/windows/amd64 -OutFile lx.exe
+
+    - name: Enable Remote Desktop
+      run: |
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -Value 0
+        Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
+        Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
+
+    - name: Start LocalXpose TCP tunnel on port 3389
+      run: .\lx.exe tunnel tcp --port 3389 --token $Env:LX_TOKEN
+      env:
+        LX_TOKEN: ${{ secrets.LX_TOKEN }}
