@@ -4,20 +4,18 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Download LocalXpose
-      run: Invoke-WebRequest -Uri "https://github.com/localxpose/localxpose/releases/latest/download/lx-windows-amd64.exe" -OutFile lx.exe
+    - name: Install dependencies
+      run: sudo apt update && sudo apt install unzip -y
 
-    - name: Enable Remote Desktop
+    - name: Download LocalXpose
       run: |
-        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
-        Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
-        Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
+        wget -O lx https://github.com/localxpose/localxpose/releases/latest/download/lx-linux-amd64
+        chmod +x lx
 
     - name: Start LocalXpose tunnel on port 3389
-      run: .\lx.exe tcp 3389 --token $Env:LX_TOKEN
+      run: ./lx tcp 3389 --token $LX_TOKEN
       env:
         LX_TOKEN: ${{ secrets.LX_TOKEN }}
