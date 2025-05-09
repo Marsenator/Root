@@ -17,8 +17,11 @@ jobs:
         run: |
           Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
-      - name: Install Mesa3D
+      - name: Download and Install Mesa3D
         run: |
+          Invoke-WebRequest -Uri "https://github.com/pal1000/mesa-dist-win/releases/download/23.1.1/mesa3d-23.1.1-release-msvc.7z" -OutFile "mesa3d.7z"
+          7z x mesa3d.7z -oC:\Mesa3D
+          setx PATH "%PATH%;C:\Mesa3D\bin"|
           choco install mesa3d -y
 
       - name: Set OpenGL Environment Variables
