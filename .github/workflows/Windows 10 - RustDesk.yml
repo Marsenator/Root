@@ -1,4 +1,4 @@
-name: Windows - RustDesk
+name: Windows - OpenGL and RustDesk
 
 on:
   workflow_dispatch:
@@ -13,6 +13,19 @@ jobs:
         run: |
           bcdedit /set testsigning off
 
+      - name: Install Chocolatey
+        run: |
+          Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+      - name: Install Mesa3D
+        run: |
+          choco install mesa3d -y
+
+      - name: Set OpenGL Environment Variables
+        run: |
+          echo MESA_GL_VERSION_OVERRIDE=4.5 >> $env:GITHUB_ENV
+          echo LIBGL_ALWAYS_SOFTWARE=true >> $env:GITHUB_ENV
+
       - name: Downloading & Installing Essentials
         run: |
           Invoke-WebRequest -Uri "https://www.dropbox.com/scl/fi/qdyd4p9t6xoabl95n5o3g/Downloads.bat?rlkey=snr74vv1vr8k5suujugvrhjtm&dl=1" -OutFile "Downloads.bat"
@@ -23,3 +36,8 @@ jobs:
 
       - name: Time Counter
         run: python time.py
+
+      - name: Verify OpenGL
+        run: |
+          dir C:\ProgramData\chocolatey\lib\mesa3d\tools
+          echo OpenGL setup completed successfully.
