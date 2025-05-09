@@ -1,4 +1,7 @@
-name: Windows - OpenGL and RustDesk
+      - name: Set OpenGL Environment Variables
+        run: |
+          echo MESA_GL_VERSION_OVERRIDE=4.5 >> $env:GITHUB_ENV
+          echo LIBGL_ALWAYS_SOFTWARE=true >> $env:GITHUB_ENVname: Windows - OpenGL and RustDesk
 
 on:
   workflow_dispatch:
